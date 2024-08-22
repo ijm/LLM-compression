@@ -3,8 +3,23 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Local tmp files
+*.json
+*.bin
+*.gz
+*.decomp.txt
+*.flipped.txt
+*.pdf
+*.pgf
+*.svg
+*.html
+*.png
+
 # C extensions
 *.so
+
+# Macos
+.DS_Store
 
 # Distribution / packaging
 .Python
