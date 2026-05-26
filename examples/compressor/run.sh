@@ -8,21 +8,23 @@
 S=../../scripts
 P=python3.9
 
+. ../model.sh
+
 # Base name of file to process - should be an arguement
 #
 F=$(basename "$1" .txt)
+OUT="${F}-${TAG}"
 export PYTHONPATH=./$S\:$PYTHONPATH
 
 # directory for intemediates is the basename of the file
-mkdir -p $F
+mkdir -p $OUT
 
-$P -m tokensOfStr -n gpt2 -i $F.txt -o $F/$F.toksout.json
-$P -m modelToInx -w 1023 -cd 0.5 -n gpt2 -i $F/$F.toksout.json -o $F/$F.ttout.json
-$P -m rangeEncode -i $F/$F.ttout.json -o $F/$F.rangedout.json
-$P -m binOfRange -i $F/$F.rangedout.json -o $F.bin
+$P -m tokensOfStr -n "$MODEL" -i $F.txt -o $OUT/$F.toksout.json
+$P -m modelToInx -w 1023 -cd 0.5 -n "$MODEL" -i $OUT/$F.toksout.json -o $OUT/$F.ttout.json
+$P -m rangeEncode -i $OUT/$F.ttout.json -o $OUT/$F.rangedout.json
+$P -m binOfRange -i $OUT/$F.rangedout.json -o $OUT.bin
 
-$P -m binToRange -i $F.bin -o $F/$F.rangedin.json
-$P -m rangeDecode -i $F/$F.rangedin.json -o $F/$F.ttin.json
-$P -m modelOfInx -w 1023 -cd 0.5 -n gpt2 -i $F/$F.ttin.json -o $F/$F.toksin.json
-$P -m tokensToStr -n gpt2 -i $F/$F.toksin.json -o $F.decomp.txt
-
+$P -m binToRange -i $OUT.bin -o $OUT/$F.rangedin.json
+$P -m rangeDecode -i $OUT/$F.rangedin.json -o $OUT/$F.ttin.json
+$P -m modelOfInx -w 1023 -cd 0.5 -n "$MODEL" -i $OUT/$F.ttin.json -o $OUT/$F.toksin.json
+$P -m tokensToStr -n "$MODEL" -i $OUT/$F.toksin.json -o $OUT.decomp.txt

@@ -47,6 +47,10 @@ def main():
 
         best_prob = token_probabilities[best_inxs].tolist()
 
+        p = np.array(best_prob)
+
+        h1 = - np.sum(p * np.log(p)) / np.log(2.0)
+
         t = token_tupples[p_end, 0]
         try:
             i = best_inxs.index(t)
@@ -54,7 +58,7 @@ def main():
             token_tupples[p_end, 2] = best_prob[i] * probprecision + 0.5
         except ValueError:
             pass
-        print(p_end, token_tupples[p_end], file=stderr)
+        print(p_end, token_tupples[p_end], h1, file=stderr)
         sleep(args.cooldown)
 
     output = {

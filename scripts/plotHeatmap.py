@@ -2,7 +2,7 @@ import numpy as np
 import xml.etree.ElementTree as E
 import matplotlib.cm as cm
 
-from transformers import GPT2Tokenizer
+from transformers import AutoTokenizer
 from json import loads
 
 from arguments import doArgs
@@ -15,7 +15,7 @@ def htmlCol(c: float) -> str:
     return f"color:#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x};"
 
 
-def fInx(i, p):
+def fInx(i, _p):
     return 1.0 if i == -1 else np.clip(i, 0, 16) / 16
 
 
@@ -35,11 +35,11 @@ def renderDiv(parent, token_tupples, color_fun, tokenizer):
 
 def main():
     args = doArgs("Generate HTML word-heat map")
-    modelname = args.modelname or "gpt2"
-
-    tokenizer = GPT2Tokenizer.from_pretrained(modelname)
 
     json = loads(args.infile.read())
+    modelname = args.modelname or json.get("modelName") or "gpt2"
+
+    tokenizer = AutoTokenizer.from_pretrained(modelname)
 
     token_tupples: list[int] = json["tokenList"]
 
@@ -89,10 +89,10 @@ def main():
         .text = "Colorized on Model Probability"
     renderDiv(c2, token_tupples, fProb, tokenizer)
 
-    str = '<?xml version="1.0" encoding="UTF-8"?>\n' + \
+    ostr = '<?xml version="1.0" encoding="UTF-8"?>\n' + \
         E.tostring(html, encoding='unicode', method='xml')
 
-    args.outfile.write(str.encode("utf8"))
+    args.outfile.write(ostr.encode("utf8"))
 
 
 main()
